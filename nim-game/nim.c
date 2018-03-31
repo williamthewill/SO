@@ -21,6 +21,7 @@ int acao = 0;
 int pesoAcao = 0;
 int countTreeView = 0;
 int plays = 0;
+int countTreeViewPerAction = 0;
 /* //////////////// Arvore ////////////// */
 
 struct nodo *criarFilhos(struct nodo *pai, int valor, int ordem){
@@ -110,13 +111,14 @@ void setaPeso(struct nodo *no, int profundidade){
         if(profundidade == 1) no->peso = no->peso > no->filho3->peso ? no->peso : no->filho3->peso;
         if(profundidade == -1) no->peso = no->peso < no->filho3->peso ? no->peso : no->filho3->peso;
     }
-    printf("valor: %d, peso: %d profundidade: %d\n", no->valor, no->peso, profundidade);
+    //printf("valor: %d, peso: %d profundidade: %d\n", no->valor, no->peso, profundidade);
 }
 
 void minmax(struct nodo *no){
     if (no == NULL) return;
     if(no->pai != NULL){
         countTreeView++;
+        countTreeViewPerAction++;
     }
     if(no->peso == 1 && no->filho1 == NULL){
         struct nodo *tempNo = no;
@@ -205,6 +207,9 @@ void mensagemDeAcao(){
     printf("Minnha vez, vou remover %d palito(s)\n", acao);
     numeroPalitos -= acao;
     mensagemPalitosRestantes();
+    printf("Quantidade de iterações na árvore: %d \n", countTreeViewPerAction);
+    printf("\n");
+    countTreeViewPerAction = 0;
 }
 
 bool alguemVenceu(){
