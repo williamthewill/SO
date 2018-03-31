@@ -1,0 +1,92 @@
+Informações sobre o desenvolvimento e comportamento do jogo nim
+
+O jogo nim (https://en.wikipedia.org/wiki/Nim), foi desenvolvido na linguegem c utilizando a técnica de minimax 
+(https://pt.wikipedia.org/wiki/Minimax) adaptada para as necessidades do jogo.
+Para que o minimax funcionasse perfeitamente foram feitas pequenas alterações no seu algorítmo original
+
+CÓDIGO ORIGINAL
+
+ROTINA minimax(nó, profundidade, maximizador)
+    SE nó é um nó terminal OU profundidade = 0 ENTÃO
+        RETORNE o valor da heurística do nó
+    SENÃO SE maximizador é FALSE ENTÃO
+        α ← +∞
+        PARA CADA filho DE nó
+            α ← min(α, minimax(filho, profundidade-1,true))
+        FIM PARA
+        RETORNE α
+    SENÃO
+        //Maximizador
+        α ← -∞
+        //Escolher a maior dentre as perdas causadas pelo minimizador
+        PARA CADA filho DE nó
+            α ← max(α, minimax(filho, profundidade-1,false))
+        FIM PARA
+        RETORNE α
+    FIM SE
+FIM ROTINA
+
+CÓDIGO ADAPTADO
+
+void minmax(struct nodo *no){
+    if (no == NULL) return;
+    if(no->pai != NULL){
+        countTreeView++;
+    }
+    if(no->peso == 1 && no->filho1 == NULL){
+        struct nodo *tempNo = no;
+        while(tempNo->pai->valor < numeroPalitos){
+            tempNo = tempNo->pai;
+        }
+        if(pesoAcao == 0){
+            pesoAcao = tempNo->peso;
+            acao = numeroPalitos - tempNo->valor;
+        }
+        if(pesoAcao < 0 && tempNo->peso == 1){
+            pesoAcao = tempNo->peso;
+            acao = numeroPalitos - tempNo->valor;
+        }
+    }
+    if(pesoAcao == 1 && acao > 0) return;
+    minmax(no->filho3);
+    if(pesoAcao == 1 && acao > 0) return;
+    minmax(no->filho2);
+    if(pesoAcao == 1 && acao > 0) return;
+    minmax(no->filho1);
+}
+
+
+No código adpado foram inseridas condições de parada da função recursiva caso o método já tenha encontrado o ramo vencedor,
+dessa forma minimizando o número de iterações dentro da árvore de decisão.
+A árvore é percorrida da direita para a esquerda, porque os menores ramos sempre estarão mais a direita. Após encontrado o ramo
+vencedor o minimax para as iterações e continua a jogada com o ramo escolhido.
+
+Antes do minimax acontecer é necessário setar o peso de cada nó na arvore para determinar para determinar se está é um 
+nó vencedor ou não.
+
+void setaPeso(struct nodo *no, int profundidade){
+    if (no == NULL) return;
+    if(no->pai != NULL) profundidade *= -1;
+    if(no->filho1 == NULL) no->peso = profundidade*-1;
+    setaPeso(no->filho1, profundidade);
+    setaPeso(no->filho2, profundidade);
+    setaPeso(no->filho3, profundidade);
+    if(no->filho1 != NULL) no->peso = no->filho1->peso;
+    if(no->filho2 != NULL){
+        if(profundidade == 1) no->peso = no->filho1->peso > no->filho2->peso ? no->filho1->peso : no->filho2->peso;
+        if(profundidade == -1) no->peso = no->filho1->peso < no->filho2->peso ? no->filho1->peso : no->filho2->peso;
+    }
+    if(no->filho3 != NULL){
+        if(profundidade == 1) no->peso = no->peso > no->filho3->peso ? no->peso : no->filho3->peso;
+        if(profundidade == -1) no->peso = no->peso < no->filho3->peso ? no->peso : no->filho3->peso;
+    }
+    //printf("valor: %d, peso: %d profundidade: %d\n", no->valor, no->peso, profundidade);
+}
+
+A função setaPeso() determina os pesos para cada nodo considerando a profundidade min/max de cada camada previsto na tecnica
+minmax cada vez que o computador faz uma jogada ele percorre cada nodo da arvore a partir da raiz(muda a cada jogada) e 
+e calcula se aquele nodo é -1 ou +1 de acordo com as regras do minmax.
+O nodo raiz muda a cada jogada, de acordo com a quantidade de palitos que sobraram, porém a árvore não é redesenhada. Por 
+exemplo se inicialmente o jogo começa com 10 palitos e a jogada seguinte remover 3 palitos então o nodo raiz será o nodo 
+que contém o valor de 7 palitos. Como a árvore ja construiu uma "sub-arvore" com o nodo de valor 7 então não é mais necessário 
+desenhar uma nova árvore e sim apontar o nodo root para o nodo de valor 7 e assim sucessivamente.

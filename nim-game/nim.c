@@ -19,6 +19,8 @@ struct nodo *pRoot;
 struct nodo *no;
 int acao = 0;
 int pesoAcao = 0;
+int countTreeView = 0;
+int plays = 0;
 /* //////////////// Arvore ////////////// */
 
 struct nodo *criarFilhos(struct nodo *pai, int valor, int ordem){
@@ -108,11 +110,14 @@ void setaPeso(struct nodo *no, int profundidade){
         if(profundidade == 1) no->peso = no->peso > no->filho3->peso ? no->peso : no->filho3->peso;
         if(profundidade == -1) no->peso = no->peso < no->filho3->peso ? no->peso : no->filho3->peso;
     }
-    //printf("valor: %d, peso: %d profundidade: %d\n", no->valor, no->peso, profundidade);
+    printf("valor: %d, peso: %d profundidade: %d\n", no->valor, no->peso, profundidade);
 }
 
 void minmax(struct nodo *no){
     if (no == NULL) return;
+    if(no->pai != NULL){
+        countTreeView++;
+    }
     if(no->peso == 1 && no->filho1 == NULL){
         struct nodo *tempNo = no;
         while(tempNo->pai->valor < numeroPalitos){
@@ -127,8 +132,11 @@ void minmax(struct nodo *no){
             acao = numeroPalitos - tempNo->valor;
         }
     }
+    if(pesoAcao == 1 && acao > 0) return;
     minmax(no->filho3);
+    if(pesoAcao == 1 && acao > 0) return;
     minmax(no->filho2);
+    if(pesoAcao == 1 && acao > 0) return;
     minmax(no->filho1);
 }
 
@@ -170,6 +178,11 @@ void mensagenDeVitoria(int jogadorVitorioso){
     }else{
         printf("Parabéns você venceu\n");
     }
+    
+    printf("Vezes em que o minimax esteve entre os nós da árvore: %d \n", countTreeView);
+    printf("Quantidade de jogadas do computador: %d \n", plays);
+    int media = countTreeView/plays;
+    printf("Média de passagens entres os nós da árvore e o número de jogadas: %d \n", media);
 }
 
 void mensagemDeJogada(){
@@ -183,23 +196,8 @@ void mensagemDeJogada(){
     mensagemPalitosRestantes();
 }
 
-int acaoPc(){
-    if((numeroPalitos%2) == 0){
-        if(numeroPalitos > 3){
-            return 3;
-        }else {
-            return 1;
-        }
-    }else{
-        if(numeroPalitos == 3){
-            return 2;
-        }else{
-            return 3;
-        }
-    }
-}
-
 void mensagemDeAcao(){
+    plays++;
     acao = 0;
     pesoAcao = 0;
     setaPeso(pRoot, 1);

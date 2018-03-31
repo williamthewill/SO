@@ -1,0 +1,19 @@
+Intruções de jogo:
+
+1 - Para jogar o nim game basta entrar no diretório onde se encontra o executável, pelo terminal e rodar da seguinte maneira $ ./nim
+
+    nim-game$ ./nim
+
+    Pré-requisitos para rodar o nim ter o gcc instalado ser uma máquina linux.
+
+Extras
+    Caso o executavel não esteja executando corretamente, tente compilar novamente com a seguinte instrução
+
+    nim-game$ gcc -o nim.c nim
+
+    Caso não esteja compilando será necessário instalar o gcc:
+    http://www.mundodoshackers.com.br/como-instalar-o-gcc-no-linux-ubuntu
+
+    Em último caso, se as intruções acima estiverem muito confusas entre nesse artigo:
+    https://fig.if.usp.br/~esdobay/c/gcc.html
+
